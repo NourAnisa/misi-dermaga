@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101e29">
+  <meta name="description" content="Game petualangan 2D untuk mempelajari properti, interaksi, serta elemen formal dan dramatis game.">
+  <title>Misi Dermaga — Nyalakan Mercusuar</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101e29'/%3E%3Cpath d='M12 13h8l3 15H9zM11 7h10v5H11zM16 3l6 4H10z' fill='%23f7c86b'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="engine.js"></script><script defer src="game.js"></script>
+</head>
+<body>
+<header class="topbar">
+ <a class="brand" href="./" aria-label="Misi Dermaga, beranda"><span class="brand-mark" aria-hidden="true">M</span><span>MISI DERMAGA<small>LAB PENGEMBANGAN GAME</small></span></a>
+ <div class="lesson-label">PERTEMUAN 06 <span>Studi properti & elemen game</span></div>
+ <button class="quiet" id="help">Cara bermain <span class="keycap">?</span></button>
+</header>
+<main>
+ <div class="heading-row"><div><div class="eyebrow">PETUALANGAN DI TEPI SUNGAI</div><h1>Nyalakan mercusuar.</h1><p>Dermaga gelap. Satu cahaya bisa membawa semua orang pulang.</p></div>
+ <div class="mode-switch" role="group" aria-label="Mode permainan"><button id="play-mode" class="selected" aria-pressed="true">Bermain</button><button id="learn-mode" aria-pressed="false">Mode belajar</button></div></div>
+ <div class="workspace">
+  <section class="play-panel" aria-label="Area permainan">
+   <div class="stage-top"><span><span class="map-dot"></span> DERMAGA SUNGAI <small>01 / EKSPLORASI</small></span><div class="stage-actions"><span id="timer" aria-label="Waktu bermain">00:00</span><button id="sound" title="Nyalakan suara" aria-label="Nyalakan suara" aria-pressed="false">♫</button><button id="pause" title="Jeda" aria-label="Jeda permainan">Ⅱ</button><button id="restart" title="Ulangi" aria-label="Ulangi permainan">↻</button></div></div>
+   <div class="stage" id="stage"><canvas id="game" width="960" height="600" tabindex="0" aria-label="Peta permainan. Gunakan WASD atau tombol panah untuk bergerak, E untuk berinteraksi. Klik objek untuk berjalan mendekatinya.">Game membutuhkan browser yang mendukung Canvas. Gunakan daftar objek untuk membaca materi.</canvas>
+    <div class="map-badge"><span class="compass">N</span><span>Muara Senja<small>SETELAH BADAI</small></span></div>
+    <div id="asset-error" hidden>Gambar belum termuat. Periksa folder assets, lalu muat ulang halaman.</div>
+    <div id="toast" class="toast" role="status" aria-live="polite"><b>Misi dimulai</b><span>Cari kunci emas dan persediaan di dermaga.</span></div>
+    <div id="overlay" class="overlay" hidden><div><span id="overlay-kicker" class="eyebrow">JEDA</span><h2 id="overlay-title">Ambil napas sebentar.</h2><p id="overlay-text">Lanjutkan saat kamu siap.</p><button id="resume" class="primary">Lanjutkan permainan</button></div></div>
+   </div>
+   <div class="game-hud"><div class="health"><span>KONDISI <b id="health-value">70 / 100</b></span><div class="health-track"><div id="health-bar"></div></div></div><div class="inventory" aria-label="Inventori"><span id="inv-key" class="slot">Kunci <b>—</b></span><span id="inv-fuel" class="slot">Bahan bakar <b>—</b></span><button id="use-med" class="slot" disabled>Obat <b>—</b><small>Q</small></button></div></div>
+   <div class="controls"><span><kbd>W A S D</kbd> / <kbd>↑ ↓ ← →</kbd> Bergerak</span><span><kbd>E</kbd> Interaksi</span><span class="click-hint">Klik / sentuh objek untuk mendekati</span></div>
+   <div class="touch-controls" aria-label="Kontrol sentuh"><div class="dpad"><button data-move="up" aria-label="Bergerak ke atas">↑</button><button data-move="left" aria-label="Bergerak ke kiri">←</button><button data-move="down" aria-label="Bergerak ke bawah">↓</button><button data-move="right" aria-label="Bergerak ke kanan">→</button></div><button id="touch-interact" class="primary">Interaksi <kbd>E</kbd></button></div>
+  </section>
+  <aside class="sidebar"><div class="tabs" role="tablist" aria-label="Panel permainan"><button role="tab" id="tab-mission" aria-controls="panel-mission" aria-selected="true" data-tab="mission">Misi</button><button role="tab" id="tab-property" aria-controls="panel-property" aria-selected="false" data-tab="property" tabindex="-1">Properti</button><button role="tab" id="tab-elements" aria-controls="panel-elements" aria-selected="false" data-tab="elements" tabindex="-1">Elemen</button></div>
+   <section id="panel-mission" role="tabpanel" aria-labelledby="tab-mission"><div class="panel-heading"><span class="eyebrow">TUJUAN UTAMA</span><h2>Cahaya untuk pulang</h2><p>Bantu Raka menyalakan mercusuar agar perahu terakhir menemukan dermaga.</p></div><div class="progress-heading"><span>PROGRES MISI</span><b id="progress-value">0 / 5</b></div><div class="progress-track"><div id="progress-bar"></div></div><ol class="objectives" id="objectives"></ol><div class="field-note"><span>CATATAN LAPANGAN</span><p id="hint-text">Dekati kunci emas di sisi kiri dermaga. Tekan E atau klik kuncinya.</p></div><div class="lesson-tip"><b>Coba sebelum mengambil kunci.</b><p>Apakah pintu bisa dibuka? Amati hubungan antara objek, aturan, dan tujuan pemain.</p></div></section>
+   <section id="panel-property" role="tabpanel" aria-labelledby="tab-property" hidden><div class="panel-heading"><span class="eyebrow">STUDI PROPERTI</span><h2>Setiap objek punya peran.</h2><p>Pilih objek pada peta atau daftar. Kategori dapat saling tumpang tindih.</p></div><label class="select-label" for="object-select">Objek yang diamati</label><select id="object-select"></select><div id="inspector"></div></section>
+   <section id="panel-elements" role="tabpanel" aria-labelledby="tab-elements" hidden><div class="panel-heading"><span class="eyebrow">BEDAH PERMAINAN</span><h2>Dari aturan ke pengalaman.</h2></div><details open><summary>Elemen formal</summary><dl><dt>Players</dt><dd>Satu pemain mengendalikan Raka.</dd><dt>Objective</dt><dd>Menyalakan mercusuar.</dd><dt>Procedures</dt><dd>Berjalan, mengambil, membuka, mengisi bahan bakar, mengaktifkan.</dd><dt>Rules</dt><dd>Pintu perlu kunci; generator perlu bahan bakar; mercusuar perlu listrik.</dd><dt>Resources</dt><dd>Kondisi (HP), kunci, bahan bakar, dan obat yang terbatas.</dd><dt>Conflict</dt><dd>Pintu terkunci, listrik padam, dan tumpahan oli yang mengurangi HP.</dd><dt>Boundaries</dt><dd>Tepi dermaga dan sungai membatasi ruang gerak.</dd><dt>Outcome</dt><dd>Berhasil jika mercusuar menyala; gagal jika HP mencapai nol.</dd></dl></details><details><summary>Elemen dramatis</summary><dl><dt>Premise</dt><dd>Badai memadamkan dermaga. Perahu terakhir memerlukan penunjuk arah.</dd><dt>Character</dt><dd>Raka, relawan yang berusaha memulihkan penerangan.</dd><dt>Challenge</dt><dd>Menemukan urutan tindakan sambil menjaga kondisi.</dd><dt>Play</dt><dd>Bebas menjelajah, mencoba objek, dan memilih rute.</dd><dt>Story</dt><dd>Pesan radio dan bangku yang ditinggalkan memberi petunjuk kehidupan sebelum badai.</dd></dl></details><div class="field-note"><span>DISKUSI KELAS</span><p>Jika kunci dihapus, aturan apa yang perlu diubah? Apa yang terjadi pada tantangan dan alur permainan?</p></div></section>
+  </aside>
+ </div>
+ <footer><span><i class="legend gold"></i> Fungsional <i class="legend teal"></i> Interaktif <i class="legend gray"></i> Dekoratif</span><span>Pengembangan Aplikasi Game <b>·</b> Studi properti 2D</span></footer>
+</main>
+<dialog id="help-dialog"><button class="dialog-close quiet" aria-label="Tutup panduan">✕</button><span class="eyebrow">PANDUAN EKSPLORASI</span><h2>Mulai dari sebuah kunci.</h2><p>Gerakkan Raka dengan <b>WASD / tombol panah</b>. Dekati objek, lalu tekan <b>E</b>. Kamu juga bisa langsung mengklik atau menyentuh objek: Raka akan berjalan ke sana.</p><ol><li>Ambil kunci emas.</li><li>Buka peti untuk memperoleh bahan bakar.</li><li>Gunakan kunci pada pintu jembatan.</li><li>Isi generator dengan bahan bakar.</li><li>Aktifkan mercusuar.</li></ol><p>Hindari oli di tengah dermaga. Ambil tas obat dan tekan <b>Q</b> untuk memulihkan 30 HP. Tekan <b>P</b> untuk jeda.</p><div class="field-note"><span>UNTUK DEMONSTRASI KELAS</span><p>Aktifkan Mode belajar, pilih sebuah properti, lalu coba interaksinya. Bandingkan keadaan sebelum dan sesudah interaksi. Buka tab Elemen untuk menghubungkannya dengan teori.</p></div><button class="primary dialog-close">Siap menjelajah</button></dialog>
+<dialog id="reset-dialog"><h2>Mulai misi dari awal?</h2><p>Inventori dan progres permainan ini akan direset.</p><div class="dialog-actions"><button id="cancel-reset" class="quiet">Batal</button><button id="confirm-reset" class="primary">Ulangi misi</button></div></dialog>
+<script>if(location.protocol==='file:'){document.documentElement.dataset.offline='true'}</script>
+</body></html>

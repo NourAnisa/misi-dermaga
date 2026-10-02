@@ -1,0 +1,12 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const D=require('../engine.js');
+function go(s,id){const o=D.OBJECTS.find(o=>o.id===id),p=D.findPath(s,o.x,o.y,62);assert.ok(p,`A route to ${id} must exist`);for(const a of p){assert.ok(D.canWalk(s,a.x,a.y),`Path to ${id} must be walkable`);s.player.x=a.x;s.player.y=a.y;}return D.act(s,id);}
+test('locked door and river block movement; distant interaction is rejected',()=>{const s=D.fresh();assert.equal(D.canWalk(s,650,350),false);assert.equal(D.canWalk(s,50,300),false);assert.equal(D.act(s,'key').ok,false);assert.equal(D.findPath(s,819,373,62),null);});
+test('door refuses access without a key; no resources are consumed on failure',()=>{const s=D.fresh();assert.equal(go(s,'door').ok,false);assert.equal(s.doorOpen,false);assert.equal(s.hp,70);});
+test('entire mission can be completed through real collision-aware paths',()=>{const s=D.fresh();for(const id of ['key','chest','door','generator','lighthouse'])assert.equal(go(s,id).ok,true,id);assert.equal(s.won,true);assert.equal(s.fuel,false);assert.equal(s.key,false);assert.equal(D.STEPS.filter(([key])=>s[key]).length,5);});
+test('chest can be opened before key and cannot duplicate fuel',()=>{const s=D.fresh();assert.equal(go(s,'chest').ok,true);s.fuel=false;assert.equal(D.act(s,'chest').ok,false);assert.equal(s.fuel,false);});
+test('generator and lighthouse enforce their prerequisites',()=>{const s=D.fresh();go(s,'key');go(s,'door');assert.equal(go(s,'generator').ok,false);assert.equal(go(s,'lighthouse').ok,false);assert.equal(s.won,false);});
+test('oil damage is time-based, stops outside oil, and ends game at zero',()=>{const s=D.fresh();s.player.x=397;s.player.y=346;D.tick(s,2.5);assert.equal(s.hp,50);s.player.x=440;D.tick(s,1);assert.equal(s.hp,50);s.player.x=397;D.tick(s,5);assert.equal(s.hp,0);assert.equal(s.failed,true);assert.equal(D.heal(s).ok,false);});
+test('medicine caps at 100, is single-use, and can be retained at full HP',()=>{const s=D.fresh();assert.equal(go(s,'medkit').ok,true);s.hp=100;assert.equal(D.heal(s).ok,false);assert.equal(s.med,true);s.hp=85;assert.equal(D.heal(s).ok,true);assert.equal(s.hp,100);assert.equal(s.med,false);assert.equal(D.heal(s).ok,false);});
+test('lamp toggles repeatably without changing mission progress',()=>{const s=D.fresh();go(s,'lamp');assert.equal(s.lampOn,false);D.act(s,'lamp');assert.equal(s.lampOn,true);assert.equal(s.won,false);assert.equal(s.keyTaken,false);});
